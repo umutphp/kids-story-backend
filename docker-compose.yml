@@ -17,12 +17,14 @@ services:
             XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            OLLAMA_HOST: ollama:11434
         volumes:
             - '.:/var/www/html'
         networks:
             - sail
         depends_on:
             - mysql
+            - ollama
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -47,6 +49,21 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    ollama:
+        image: ollama/ollama:latest
+        ports:
+            - 11434:11434
+        volumes:
+            - ~/.ollama:/root/.ollama
+        container_name: ollama
+        pull_policy: always
+        tty: true
+        restart: always
+        environment:
+            OLLAMA_KEEP_ALIVE: 24h
+            OLLAMA_HOST: ollama
+        networks:
+            - sail
 
 networks:
     sail:

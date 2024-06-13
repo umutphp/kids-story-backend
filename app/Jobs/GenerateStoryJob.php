@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use LLPhant\Chat\OllamaChat;
 use LLPhant\OllamaConfig;
 
@@ -54,23 +55,25 @@ class GenerateStoryJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $service = new PromptService($this->storyTrigger->parameters["lang"]?? "en");
+        $service = new PromptService();
 
         $this->storyTrigger->status = 'pending';
         $this->storyTrigger->generation_started_at = Carbon::now();
         $this->storyTrigger->save();
 
-        $prompt        = $service->getPrompt($this->storyTrigger);
-        $config        = new OllamaConfig();
-        $config->model = 'llama2';
-        $config->url   = "http://host.docker.internal:11434/api/";
-        $chat          = new OllamaChat($config);
-        $text          = $chat->generateText($prompt);
+        Log::info('Call ' . env('AI_SERVICE'));
+
+        $prompt = $service->getPrompt($this->storyTrigger);
+        Log::info('Prompt: ' . $prompt);
+        $text   = StoryService::generateStoryText($prompt);
+        Log::info('Result: ' . $text);
 
         $story             = new Story();
         $story->title      = "Title to be parsed";
         $story->body       = $text;
         $story->characters = $this->storyTrigger->characters;
+        $story->lang       = $this->storyTrigger->parameters["lang"]?? 'en';
+
 
         $parsed = StoryService::parseTitle($story);
 

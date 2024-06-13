@@ -34,6 +34,10 @@ class StoryResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(1024),
+                Forms\Components\Select::make('lang')
+                    ->options(['en' => 'en', 'tr' => 'tr'])
+                    ->searchable()
+                    ->required(),
                 Forms\Components\Textarea::make('body')
                     ->required()
                     ->rows(32)
@@ -87,7 +91,6 @@ class StoryResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -96,15 +99,6 @@ class StoryResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        $infolist
-            ->schema([
-                StoryRichBody::make('rich-body')->hiddenLabel(true)
-            ])->columns(1);
-
-        return $infolist;
-    }
 
     public static function getRelations(): array
     {
@@ -118,9 +112,7 @@ class StoryResource extends Resource
         return [
             'index' => Pages\ListStories::route('/'),
             'create' => Pages\CreateStory::route('/create'),
-            'view' => Pages\ViewStory::route('/{record}'),
             'edit' => Pages\EditStory::route('/{record}/edit'),
-            'manage' => Pages\ReadStory::route('/{record}/read'),
         ];
     }
 }

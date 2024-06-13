@@ -31,4 +31,14 @@ return [
         ],
     ],
 
+    'ollama' => [
+        'host' => env('OLLAMA_HOST', '0.0.0.0:11434'),
+        'default_model' => env('OLLAMA_DEFAULT_MODEL', 'llama3')
+    ],
+
+    'openai' => [
+        'key'   => env('OPENAI_API_KEY'),
+        'model' => env('OPEN_AI_MODEL'),
+    ],
+
 ];
