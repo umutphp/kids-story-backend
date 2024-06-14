@@ -33,3 +33,10 @@ cp .env.example .env
 Docker Hub'daki resmi `ollama/ollama:latest` image'ı kullanarak `docker-compose.yml` dosyasına bir servis ekledim. Ama eğer direk makinanızda kurulu olan Ollama'yı kullanmak isterseniz de `.env` dosyasında OLLAMA_HOST değerini `host.docker.internal:11434` yapabilirsiniz.
 
 Ayrıca Docker içinde çalışan Ollama için cache klasörünü ana makinadaki Ollama cache klasörü ile aynı yaparak aynı modelleri tekrar tekrar indirmeden kullanabilirsiniz.
+
+Kullanacağınız modeli Ollama container içine indirmeniz gerekiyor. İnternet hızınıza göre biraz zaman alacaktır.
+
+```bash
+docker-compose exec -it ollama /bin/bash
+ollama pull llama3
+```
